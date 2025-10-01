@@ -1,7 +1,7 @@
-import { Body, Controller, Get, HttpCode, Post } from "@nestjs/common";
+import { Body, Controller, HttpCode, Post } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { WebResponse } from "src/model/web.model";
-import { RegisterUserRequest, UserResponse } from "src/model/user.module";
+import { RegisterUserRequest, UserResponse } from "src/model/user.model";
 
 @Controller('/api/users')
 export class UserController {
