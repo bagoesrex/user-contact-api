@@ -5,6 +5,7 @@ import { ValidationService } from "src/common/validation.service";
 import { RegisterUserRequest, UserResponse } from "src/model/user.module";
 import { Logger } from "winston";
 import { UserValidation } from "./user.validation";
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -28,6 +29,8 @@ export class UserService {
         if (totalUserWithSameUsername != 0) {
             throw new HttpException('Username already registered', 400)
         }
+
+        registerRequest.password = await bcrypt.hash(registerRequest.password, 10)
 
         const user = await this.prismaService.user.create({
             data: registerRequest
