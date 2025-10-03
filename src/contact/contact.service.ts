@@ -15,6 +15,16 @@ export class ContactService {
         @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger
     ) { }
 
+    toContactResponse(contact: Contact): ContactResponse {
+        return {
+            id: contact.id,
+            first_name: contact.first_name,
+            last_name: contact.last_name!,
+            email: contact.email!,
+            phone: contact.phone!
+        }
+    }
+
     async create(user: User, request: CreateContactRequest): Promise<ContactResponse> {
         this.logger.debug(`ContactService.create((${JSON.stringify(user)}, ${JSON.stringify(request)})`)
 
@@ -28,13 +38,7 @@ export class ContactService {
             }
         })
 
-        return {
-            id: contact.id,
-            first_name: contact.first_name,
-            last_name: contact.last_name!,
-            email: contact.email!,
-            phone: contact.phone!,
-        }
+        return this.toContactResponse(contact)
     }
 
     async get(user: User, contactId: number): Promise<ContactResponse> {
@@ -49,12 +53,6 @@ export class ContactService {
             throw new HttpException('Contact is not found', 404)
         }
 
-        return {
-            id: contact.id,
-            first_name: contact.first_name,
-            last_name: contact.last_name!,
-            email: contact.email!,
-            phone: contact.phone!,
-        }
+        return this.toContactResponse(contact)
     }
 }
