@@ -1,4 +1,39 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { User } from "generated/prisma";
+import { WINSTON_MODULE_PROVIDER } from "nest-winston";
+import { PrismaService } from "src/common/prisma.service";
+import { ValidationService } from "src/common/validation.service";
+import { ContactResponse, CreateContactRequest } from "src/model/contact.model";
+import { Logger } from "winston";
+import { ContactValidation } from "./contact.validation";
 
 @Injectable()
-export class ContactService { }
+export class ContactService {
+    constructor(
+        private prismaService: PrismaService,
+        private validationService: ValidationService,
+        @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger
+    ) { }
+
+    async create(user: User, request: CreateContactRequest): Promise<ContactResponse> {
+        this.logger.debug(`ContactService.create((${JSON.stringify(user)}, ${JSON.stringify(request)})`)
+
+        const createRequest =
+            this.validationService.validate(ContactValidation.CREATE, request) as CreateContactRequest
+
+        const contact = await this.prismaService.contact.create({
+            data: {
+                ...createRequest,
+                username: user.username
+            }
+        })
+
+        return {
+            id: contact.id,
+            first_name: contact.first_name,
+            last_name: contact.last_name!,
+            email: contact.email!,
+            phone: contact.phone!,
+        }
+    }
+}
