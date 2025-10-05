@@ -3,7 +3,7 @@ import { Address, User } from "generated/prisma";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { PrismaService } from "src/common/prisma.service";
 import { ValidationService } from "src/common/validation.service";
-import { AddressResponse, CreateAddressRequest, GetAddressRequest, UpdateAddressRequest } from "src/model/address.model";
+import { AddressResponse, CreateAddressRequest, GetAddressRequest, RemoveAddressRequest, UpdateAddressRequest } from "src/model/address.model";
 import { Logger } from "winston";
 import { AddressValidation } from "./address.validation";
 import { ContactService } from "src/contact/contact.service";
@@ -84,6 +84,31 @@ export class AddressService {
                 contact_id: address.contact_id
             },
             data: updateRequest
+        })
+
+        return {
+            id: address.id,
+            street: address.street!,
+            city: address.city!,
+            province: address.province!,
+            country: address.country,
+            postal_code: address.postal_code
+        }
+    }
+
+    async remove(user: User, request: RemoveAddressRequest): Promise<AddressResponse> {
+        const removeRequest =
+            this.validationService.validate(AddressValidation.REMOVE, request) as RemoveAddressRequest
+
+        await this.contactService.checkContactMustExists(user.username, removeRequest.contact_id)
+
+        await this.checkAddressMustExists(removeRequest.address_id, removeRequest.contact_id)
+
+        const address = await this.prismaService.address.delete({
+            where: {
+                id: removeRequest.address_id,
+                contact_id: removeRequest.contact_id
+            }
         })
 
         return {
