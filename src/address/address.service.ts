@@ -120,4 +120,23 @@ export class AddressService {
             postal_code: address.postal_code
         }
     }
+
+    async list(user: User, contactId: number): Promise<AddressResponse[]> {
+        await this.contactService.checkContactMustExists(user.username, contactId)
+
+        const addresses = await this.prismaService.address.findMany({
+            where: {
+                contact_id: contactId
+            }
+        })
+
+        return addresses.map(address => ({
+            id: address.id,
+            street: address.street!,
+            city: address.city!,
+            province: address.province!,
+            country: address.country,
+            postal_code: address.postal_code
+        }))
+    }
 }
