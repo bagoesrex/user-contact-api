@@ -18,7 +18,8 @@ export class UserService {
     ) { }
 
     async register(request: RegisterUserRequest): Promise<UserResponse> {
-        this.logger.debug(`Register new user ${JSON.stringify(request)}`)
+        this.logger.debug(`UserService.register(${JSON.stringify(request)})`)
+
         const registerRequest =
             this.validationService.validate(UserValidation.REGISTER, request) as RegisterUserRequest
 
@@ -118,6 +119,8 @@ export class UserService {
     }
 
     async logout(user: User): Promise<UserResponse> {
+        this.logger.debug(`UserService.logout(${JSON.stringify(user)})`)
+
         const result = await this.prismaService.user.update({
             where: {
                 username: user.username
