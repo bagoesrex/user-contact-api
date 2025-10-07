@@ -64,6 +64,8 @@ export class ContactService {
     }
 
     async update(user: User, request: UpdateContactRequest): Promise<ContactResponse> {
+        this.logger.debug(`ContactService.update((${JSON.stringify(user)}, ${JSON.stringify(request)})`)
+
         const updateRequest =
             this.validationService.validate(ContactValidation.UPDATE, request) as UpdateContactRequest
 
@@ -81,6 +83,8 @@ export class ContactService {
     }
 
     async remove(user: User, contactId: number): Promise<ContactResponse> {
+        this.logger.debug(`ContactService.remove((${JSON.stringify(user)}, ${JSON.stringify(contactId)})`)
+
         await this.checkContactMustExists(user.username, contactId)
 
         const contact = await this.prismaService.contact.delete({
@@ -94,6 +98,8 @@ export class ContactService {
     }
 
     async search(user: User, request: SearchContactRequest): Promise<WebResponse<ContactResponse[]>> {
+        this.logger.debug(`ContactService.search((${JSON.stringify(user)}, ${JSON.stringify(SearchContactRequest)})`)
+
         const searchRequest =
             this.validationService.validate(ContactValidation.SEARCH, request) as SearchContactRequest
 
